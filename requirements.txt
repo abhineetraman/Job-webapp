@@ -1,0 +1,6 @@
+Flask
+Flask-SQLAlchemy
+Flask-restful
+Celery[Redis]
+flask_cors
+Flask-JWT-Extended

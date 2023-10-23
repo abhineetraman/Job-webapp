@@ -1,0 +1,436 @@
+openapi: 3.0.3
+info:
+  title: Job Portal Database Schema
+  description: This is the OpenAPI 3.0.0 schema for the database tables of the job portal API.
+  version: 1.0.0
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        password:
+          type: string
+        username:
+          type: string
+        accessToken:
+          type: string
+        urole:
+          type: string
+    JobDetails:
+      type: object
+      properties:
+        sl_no:
+          type: integer
+        Job_id:
+          type: string
+        name:
+          type: string
+        place:
+          type: string
+        role:
+          type: string
+        details:
+          type: string
+    AppliedJobs:
+      type: object
+      properties:
+        sl_no:
+          type: integer
+        uname:
+          type: string
+        Job_id:
+          type: string
+        role:
+          type: string
+        place:
+          type: string
+    Profile:
+      type: object
+      properties:
+        uname:
+          type: string
+        fname:
+          type: string
+        lname:
+          type: string
+        dob:
+          type: string
+        phone:
+          type: integer
+    Applicants:
+      type: object
+      properties:
+        sl_no:
+          type: integer
+        Job_id:
+          type: string
+        email:
+          type: string
+        fname:
+          type: string
+        lname:
+          type: string
+        dob:
+          type: string
+        phone:
+          type: integer
+  version: 1.0.0
+servers:
+  - url: http://127.0.0.1:5000/
+paths:
+  /api/login/{email}/{password}:
+    description: End point to login resource with credentials.
+    post:
+      description: Operation to login.
+      parameters:
+        - in: path
+          name: email
+          required: true
+          schema:
+            type: string
+            example: xyz@xyz.com
+        - in: path
+          name: password
+          required: true
+          schema:
+            type: string
+            example: password
+      responses:
+        '200':
+          description: Request Successful
+          content:
+            application/json:
+              schema:
+                title: login object
+                type: object
+                properties:
+                  username:
+                    type: string
+                    example: xyz
+                  password:
+                    type: string
+                    example: password
+                  urole:
+                    type: string
+                    example: user
+                  accessToken:
+                    type: string
+                    example: xHwacKerQuerTYXDiN
+        '500':
+          description: Internal Server Error
+        '404':
+          description: User not found
+
+
+  /api/signup/POST:
+    description: End point to create user resource
+    post:
+      description: Operation to create the user resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: xyz@xyz.com
+                password:
+                  type: string
+                  example: password
+      responses:
+        '201':
+          description: Successfully Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 201
+                  email:
+                    type: string
+                    example: xyz@xyz.com
+                  password:
+                    type: string
+                    example: password
+                  username:
+                    type: string
+                    example: xyz
+                  urole:
+                    type: string
+                    example: user
+        '402':
+          description: user already exist
+        '500':
+          description: Internal Server Error
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error_code:
+                    type: string
+                  error_message:
+                    type: string
+  /api/jobdet/<int:id>:
+    get:
+      tags:
+        - JobDetails
+      summary: Get the details of a specific job.
+      parameters:
+          -name: id
+          in: path
+          required: true
+          type: integer
+          description: The ID of the job.
+      responses:
+       200:
+          description: The details of the job.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobDetails'
+  /api/job:
+    get:
+      tags:
+        - Job
+      summary: Get a list of all jobs.
+      responses:
+        200:
+          description: A list of all jobs.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+  /api/job/<string:uname>:
+    post:
+      tags:
+        - Job
+      summary: Create a new job.
+      parameters:
+        - name: jid
+          in: body
+          required: true
+          type: string
+          description: The ID of the job.
+        - name: name
+          in: body
+          required: true
+          type: string
+          description: The name of the job.
+        - name: place
+          in: body
+          required: true
+          type: string
+          description: The place of the job.
+        - name: role
+          in: body
+          required: true
+          type: string
+          description: The role of the job.
+        - name: details
+          in: body
+          required: true
+          type: string
+          description: The details of the job.
+      responses:
+        200:
+          description: The job was created successfully.
+        400:
+          description: Bad request.
+        409:
+          description: Conflict.
+
+  /api/job/<string:uname>/<string:id>:
+    put:
+      tags:
+        - Job
+      summary: Update a job.
+      parameters:
+        - name: uname
+          in: path
+          required: true
+          type: string
+          description: The username of the user.
+        - name: id
+          in: path
+          required: true
+          type: string
+          description: The ID of the job.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                place:
+                  type: string
+                role:
+                  type: string
+                details:
+                  type: string
+      responses:
+        200:
+          description: The job was updated successfully.
+        400:
+          description: Bad request.
+        404:
+          description: Job not found.
+
+    delete:
+      tags:
+        - Job
+      summary: Delete a job.
+      parameters:
+        - name: uname
+          in: path
+          required: true
+          type: string
+          description: The username of the user.
+        - name: id
+          in: path
+          required: true
+          type: string
+          description: The ID of the job.
+      responses:
+        200:
+          description: The job was deleted successfully.
+        404:
+          description: Job not found.
+
+  /api/applied/<string:uname>:
+    get:
+      tags:
+        - AppliedJob
+      summary: Get a list of all jobs that the user has applied for.
+      parameters:
+        - name: uname
+          in: path
+          required: true
+          type: string
+          description: The username of the user.
+      responses:
+        200:
+          description: A list of all jobs that the user has applied for.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppliedJob'
+
+  /api/applied/<string:uname>/job/<int:id>:
+    post:
+      tags:
+        - AppliedJob
+      summary: Apply for a job.
+      parameters:
+        - name: uname
+          in: path
+          required: true
+          
+  /api/profile/<string:uname>:
+    get:
+      tags:
+        - Profile
+      summary: Get the profile of the user.
+      parameters:
+        - name: uname
+          in: path
+          required: true
+          type: string
+          description: The username of the user.
+      responses:
+        200:
+          description: The profile of the user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+
+    post:
+      tags:
+        - Profile
+      summary: Update the profile of the user.
+      parameters:
+        - name: uname
+          in: path
+          required: true
+          type: string
+          description: The username of the user.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fname:
+                  type: string
+                lname:
+                  type: string
+                dob:
+                  type: string
+                phone:
+                  type: integer
+      responses:
+        200:
+          description: The profile of the user was updated successfully.
+        400:
+          description: Bad request.
+        404:
+          description: Profile not found.
+
+  /api/applicant/<string:uname>/<string:id>:
+    get:
+      tags:
+        - Applicant
+      summary: Get a list of all applicants for a job.
+      parameters:
+        - name: uname
+          in: path
+          required: true
+          type: string
+          description: The username of the user.
+        - name: id
+          in: path
+          required: true
+          type: string
+          description: The ID of the job.
+      responses:
+        200:
+          description: A list of all applicants for the job.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Applicant'
+
+    post:
+      tags:
+        - Applicant
+      summary: Apply for a job.
+      parameters:
+        - name: uname
+          in: path
+          required: true
+          type: string
+          description: The username of the user.
+        - name: id
+          in: path
+          required: true
+          type: string
+          description: The ID of the job.
+      responses:
+        200:
+          description: The application was successful.
+        400:
+          description: Bad request.
+        404:
+          description: Job not found.
